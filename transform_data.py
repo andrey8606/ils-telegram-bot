@@ -1,12 +1,9 @@
-import pandas as pd
-import numpy as np
-import requests
 import json
 import os
-from datetime import datetime
-import time
-from dotenv import load_dotenv
 
+import pandas as pd
+import requests
+from dotenv import load_dotenv
 
 load_dotenv()
 API_TOKEN = os.getenv('API_TOKEN')
