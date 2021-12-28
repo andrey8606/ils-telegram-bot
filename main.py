@@ -20,8 +20,7 @@ updater = Updater(token=TELEGRAM_TOKEN, use_context=True)
 
 def get_new_image():
     response = requests.get(URL).json()
-    random_cat = response[0].get('url')
-    return random_cat
+    return response[0].get('url')
 
 
 def new_cat(update, context):
@@ -30,7 +29,9 @@ def new_cat(update, context):
     if chat['id'] in allowed_chats:
         context.bot.send_photo(chat.id, get_new_image())
     else:
-        context.bot.send_message(chat.id, 'У вас нет прав для выполнения этой команды!')
+        context.bot.send_message(
+            chat.id,
+            'У вас нет прав для выполнения этой команды!')
 
 
 def update_data(update, context):
@@ -38,22 +39,32 @@ def update_data(update, context):
     name = update.message.chat.first_name
     allowed_chats = list(map(int, TELEGRAM_CHATS.split()))
     if chat['id'] in allowed_chats:
-        context.bot.send_message(chat.id, 'Одну секунду, {}, команда выполняется...'.format(name))
+        context.bot.send_message(
+            chat.id,
+            'Одну секунду, {}, команда выполняется...'.format(name))
         data = transform_data(get_all_data())
-        context.bot.send_message(chat.id, 'Данные с Google sheets загружены...')
+        context.bot.send_message(
+            chat.id,
+            'Данные с Google sheets загружены...')
         delete_data_from_server()
-        context.bot.send_message(chat.id, 'Старые данные с сайта удалены успешно...')
+        context.bot.send_message(
+            chat.id,
+            'Старые данные с сайта удалены успешно...')
         upload_data_to_server(data)
-        context.bot.send_message(chat.id,
-                                 'Информация обновлена! Всего строк: ' + str(len(data['results'])))
+        context.bot.send_message(
+            chat.id,
+            'Информация обновлена! Всего строк: ' + str(len(data['results'])))
     else:
-        context.bot.send_message(chat.id, 'У вас недостаточно прав для выполнения этой команды!')
+        context.bot.send_message(
+            chat.id,
+            'У вас недостаточно прав для выполнения этой команды!')
 
 
 def wake_up(update, context):
     chat = update.effective_chat
     name = update.message.chat.first_name
-    button = ReplyKeyboardMarkup([['/newcat', '/update']], resize_keyboard=True)
+    button = ReplyKeyboardMarkup([['/newcat', '/update']],
+                                 resize_keyboard=True)
 
     context.bot.send_message(
         chat_id=chat.id,

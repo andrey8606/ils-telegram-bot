@@ -29,14 +29,14 @@ def set_results(row):
     name = row['name']
     dist = row['Dist']
     year = row['Year']
-    # это верно только для 1000м, для 100м - дописать, когда появится информация
+    # это верно только для 1000м
+    # для 100м - дописать, когда появится информация
     data1000 = ALL_RESULTS[year][0]
     data100 = ALL_RESULTS[year][0]
     try:
         if dist == 100:
             return data100.loc[data100['name'] == name, 'index'].iloc[0]
-        else:
-            return data1000.loc[data1000['name'] == name, 'index'].iloc[0]
+        return data1000.loc[data1000['name'] == name, 'index'].iloc[0]
     except:
         return 'None'
 
@@ -63,9 +63,11 @@ def set_results_gender(row):
     if gender == 'М':
         if dist == 1000:
             return data_m.loc[data_m['name'] == name, 'index'].iloc[0]
+        return 0
     else:
         if dist == 1000:
             return data_w.loc[data_w['name'] == name, 'index'].iloc[0]
+        return 0
 
 
 def define_progress(data):
@@ -83,8 +85,6 @@ def define_progress(data):
                     res.append(-1)
             else:
                 k = i - 1
-                if i == 9:
-                    b = 1
                 while data[k] == 0 and k > 0:
                     k -= 1
                 if data[k] == 0:
@@ -102,16 +102,20 @@ def define_progress(data):
 
 def delete_data_from_server():
     url = 'https://league.ilovesupersport.com/swimming-api/v1/drop-results/'
-    response = requests.request("DELETE", url, headers=HEADERS, data={})
+    requests.request("DELETE", url, headers=HEADERS, data={})
 
 
 def upload_data_to_server(data):
     url = 'https://league.ilovesupersport.com/swimming-api/v1/results/'
     try:
-        response = requests.request("POST", url, headers=HEADERS, data=json.dumps(data['results'][0:1000]))
-        response = requests.request("POST", url, headers=HEADERS, data=json.dumps(data['results'][1000:2000]))
-        response = requests.request("POST", url, headers=HEADERS, data=json.dumps(data['results'][2000:3000]))
-        response = requests.request("POST", url, headers=HEADERS, data=json.dumps(data['results'][3000:]))
+        requests.request("POST", url, headers=HEADERS,
+                         data=json.dumps(data['results'][0:1000]))
+        requests.request("POST", url, headers=HEADERS,
+                         data=json.dumps(data['results'][1000:2000]))
+        requests.request("POST", url, headers=HEADERS,
+                         data=json.dumps(data['results'][2000:3000]))
+        requests.request("POST", url, headers=HEADERS,
+                         data=json.dumps(data['results'][3000:]))
     except requests.exceptions.Timeout:
         raise Exception('Сервер отвалился по таймауту')
     except requests.exceptions.RequestException:
@@ -137,18 +141,21 @@ def transform_data(data):
 
     for col, data in df.groupby('Year'):
         res1000 = (data[data['Dist'] == 1000]
-                   .pivot_table(index='name', values='Seconds', aggfunc='min')
+                   .pivot_table(index='name',
+                                values='Seconds', aggfunc='min')
                    .sort_values(by='Seconds')
                    .reset_index().reset_index())
         res1000['index'] = res1000['index'].apply(lambda x: x + 1)
         res1000['s20'] = res1000['Seconds'].apply(set_sub20)
 
         res_m_1000 = (data[(data['Dist'] == 1000) & (data['gender'] == 'М')]
-                      .pivot_table(index='name', values='Seconds', aggfunc='min')
+                      .pivot_table(index='name',
+                                   values='Seconds', aggfunc='min')
                       .sort_values(by='Seconds').reset_index().reset_index())
         res_m_1000['index'] = res_m_1000['index'].apply(lambda x: x + 1)
         res_w_1000 = (data[(data['Dist'] == 1000) & (data['gender'] == 'Ж')]
-                      .pivot_table(index='name', values='Seconds', aggfunc='min')
+                      .pivot_table(index='name',
+                                   values='Seconds', aggfunc='min')
                       .sort_values(by='Seconds').reset_index().reset_index())
         res_w_1000['index'] = res_w_1000['index'].apply(lambda x: x + 1)
 
@@ -162,8 +169,10 @@ def transform_data(data):
     d = df[['name', 'date']]
     i = 0
     for row in d[d.duplicated()].values:
-        data = df[(df['name'] == row[0]) & (df['date'] == row[1])].sort_values(by='Seconds').iloc[0:1]
-        df = df.drop(index=df[(df['name'] == row[0]) & (df['date'] == row[1])].index)
+        data = df[(df['name'] == row[0]) &
+                  (df['date'] == row[1])].sort_values(by='Seconds').iloc[0:1]
+        df = df.drop(index=df[(df['name'] == row[0]) &
+                              (df['date'] == row[1])].index)
         df = pd.concat([df, data])
 
     df['year'] = pd.DatetimeIndex(df['date']).year
@@ -214,7 +223,8 @@ def transform_data(data):
                 dec = val
 
         res_month = define_progress(res_month)
-        best_time_sec = data[data['Seconds'] == data['Seconds'].min()].values[0][6]
+        best_time_sec = (data[data['Seconds'] ==
+                              data['Seconds'].min()].values[0][6])
         if best_time_sec < 960:
             rank = 'SUB16'
         elif best_time_sec < 1080:

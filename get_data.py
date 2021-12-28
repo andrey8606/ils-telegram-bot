@@ -21,12 +21,13 @@ TOKEN_DICT = {
 
 
 def get_all_data():
-    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    scope = [
+        'https://spreadsheets.google.com/feeds',
+        'https://www.googleapis.com/auth/drive']
     creds = ServiceAccountCredentials.from_json_keyfile_dict(TOKEN_DICT, scope)
     client = gspread.authorize(creds)
     sheet = client.open('Results_AllData')
     sheet_instance = sheet.get_worksheet(0)
     records_data = sheet_instance.get_all_records()
     df = pd.DataFrame(records_data)
-    df = df.dropna()
-    return df
+    return df.dropna()
