@@ -72,4 +72,4 @@ jobs:
             echo AUTH_PROVIDER=${{ secrets.AUTH_PROVIDER }} >> .env
             echo CLIENT_CERT=${{ secrets.CLIENT_CERT }} >> .env
             echo PRIVATE_KEY=${{ secrets.PRIVATE_KEY }} >> .env            
-            sudo docker run --rm -d andrey8606/infra_actions:latest
+            sudo docker run --rm -d andrey8606/ils-telegram-bot:latest
