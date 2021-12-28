@@ -170,7 +170,8 @@ def transform_data(data):
     i = 0
     for row in d[d.duplicated()].values:
         data = (df[(df['name'] == row[0])
-                   & (df['date'] == row[1])].sort_values(by='Seconds').iloc[0:1])
+                   & (df['date'] == row[1])].sort_values(
+            by='Seconds').iloc[0:1])
         df = (df.drop(index=df[(df['name'] == row[0])
                                & (df['date'] == row[1])].index))
         df = pd.concat([df, data])
