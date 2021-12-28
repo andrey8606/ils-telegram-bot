@@ -169,10 +169,10 @@ def transform_data(data):
     d = df[['name', 'date']]
     i = 0
     for row in d[d.duplicated()].values:
-        data = df[(df['name'] == row[0]) &
-                  (df['date'] == row[1])].sort_values(by='Seconds').iloc[0:1]
-        df = df.drop(index=df[(df['name'] == row[0]) &
-                              (df['date'] == row[1])].index)
+        data = (df[(df['name'] == row[0])
+                   & (df['date'] == row[1])].sort_values(by='Seconds').iloc[0:1])
+        df = (df.drop(index=df[(df['name'] == row[0])
+                               & (df['date'] == row[1])].index))
         df = pd.concat([df, data])
 
     df['year'] = pd.DatetimeIndex(df['date']).year
@@ -223,8 +223,8 @@ def transform_data(data):
                 dec = val
 
         res_month = define_progress(res_month)
-        best_time_sec = (data[data['Seconds'] ==
-                              data['Seconds'].min()].values[0][6])
+        best_time_sec = (data[data['Seconds']
+                              == data['Seconds'].min()].values[0][6])
         if best_time_sec < 960:
             rank = 'SUB16'
         elif best_time_sec < 1080:
