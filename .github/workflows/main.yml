@@ -56,7 +56,7 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |            
             sudo docker stop $(sudo docker ps -q --filter ancestor=andrey8606/ils-telegram-bot:latest)
-            sudo docker rmi andrey8606/ils-telegram-bot:latest 
+            sudo docker rmi andrey8606/ils-telegram-bot
             sudo docker pull andrey8606/ils-telegram-bot:latest                        
             touch .env
             echo TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }} > .env

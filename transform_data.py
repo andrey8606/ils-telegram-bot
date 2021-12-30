@@ -4,8 +4,10 @@ import os
 
 import pandas as pd
 import requests
+from dotenv import load_dotenv
 
-API_TOKEN = os.environ.get('API_TOKEN')
+load_dotenv()
+API_TOKEN = os.getenv('API_TOKEN')
 HEADERS = {
     'Authorization': API_TOKEN,
     'Content-Type': 'application/json'
