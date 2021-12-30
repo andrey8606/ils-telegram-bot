@@ -1,4 +1,5 @@
 import os
+import base64
 
 import gspread
 import pandas as pd
@@ -10,7 +11,7 @@ TOKEN_DICT = {
     "type": os.getenv('TYPE'),
     "project_id": os.getenv('PROJECT_ID'),
     "private_key_id": os.getenv('PRIVATE_KEY_ID'),
-    "private_key": os.getenv('PRIVATE_KEY'),
+    "private_key": base64.b64decode(os.getenv('PRIVATE_KEY').encode("UTF-8")).decode("UTF-8"),
     "client_email": os.getenv('CLIENT_EMAIL'),
     "client_id": os.getenv('CLIENT_ID'),
     "auth_uri": os.getenv('AUTH_URI'),
