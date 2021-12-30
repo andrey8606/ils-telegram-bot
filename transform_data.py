@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 API_TOKEN = os.getenv('API_TOKEN')
 HEADERS = {
-    'Authorization': 'Token ' + API_TOKEN,
+    'Authorization': API_TOKEN,
     'Content-Type': 'application/json'
 }
 ALL_RESULTS = {}
