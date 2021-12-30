@@ -1,6 +1,7 @@
+import datetime as dt
 import json
 import os
-import datetime as dt
+
 import pandas as pd
 import requests
 from dotenv import load_dotenv
@@ -136,7 +137,8 @@ def upload_data_to_server(data):
 
 def transform_data(data):
     df = data.copy()
-    df['date'] = df['date'].apply(lambda x: dt.datetime.strptime(x, '%d.%m.%Y'))
+    df['date'] = df['date'].apply(
+        lambda x: dt.datetime.strptime(x, '%d.%m.%Y'))
     df['Year'] = pd.DatetimeIndex(df['date']).year
     df = df[df['Year'] != 2015]
 
