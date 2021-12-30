@@ -55,7 +55,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |            
-            docker stop $(docker ps -q --filter ancestor=andrey8606/ils-telegram-bot:latest)
+            sudo docker stop $(sudo docker ps -q --filter ancestor=andrey8606/ils-telegram-bot:latest)
             sudo docker rmi andrey8606/ils-telegram-bot:latest 
             sudo docker pull andrey8606/ils-telegram-bot:latest                        
             touch .env
@@ -72,7 +72,7 @@ jobs:
             echo AUTH_PROVIDER=${{ secrets.AUTH_PROVIDER }} >> .env
             echo CLIENT_CERT=${{ secrets.CLIENT_CERT }} >> .env
             echo PRIVATE_KEY=${{ secrets.PRIVATE_KEY }} >> .env            
-            sudo docker run --rm -d andrey8606/ils-telegram-bot:latest
+            sudo docker run --env-file ./.env --rm -d andrey8606/ils-telegram-bot:latest
   send_message:
     runs-on: ubuntu-latest
     needs: deploy
