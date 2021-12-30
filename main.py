@@ -1,7 +1,6 @@
 import os
 
 import requests
-from dotenv import load_dotenv
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import (CommandHandler, Updater)
 
@@ -10,9 +9,8 @@ from transform_data import (transform_data,
                             delete_data_from_server,
                             upload_data_to_server)
 
-load_dotenv()
-TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
-TELEGRAM_CHATS = os.getenv('TELEGRAM_CHAT_ID')
+TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
+TELEGRAM_CHATS = os.environ.get('TELEGRAM_CHAT_ID')
 URL = 'https://api.thecatapi.com/v1/images/search'
 
 updater = Updater(token=TELEGRAM_TOKEN, use_context=True)
