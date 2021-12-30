@@ -55,7 +55,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |            
-            sudo docker stop $(sudo docker ps -a -q)
+            docker stop $(docker ps -q --filter ancestor=andrey8606/ils-telegram-bot:latest)
             sudo docker rmi andrey8606/ils-telegram-bot:latest 
             sudo docker pull andrey8606/ils-telegram-bot:latest                        
             touch .env
