@@ -4,10 +4,14 @@ import requests
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import (CommandHandler, Updater)
 
-from get_data import get_all_data
-from transform_data import (transform_data,
-                            delete_data_from_server,
-                            upload_data_to_server)
+from ILS.get_data import get_all_data_ils
+from ILS.transform_data import (transform_data_ils,
+                                delete_data_from_server_ils,
+                                upload_data_to_server_ils)
+from ILR.ilr_get_data import get_all_data_ilr
+from ILR.ilr_transform_data import (transform_data_ilr,
+                                    delete_data_from_server_ilr,
+                                    upload_data_to_server_ilr)
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -34,7 +38,7 @@ def new_cat(update, context):
             'У вас нет прав для выполнения этой команды!')
 
 
-def update_data(update, context):
+def update_data_ils(update, context):
     chat = update.effective_chat
     name = update.message.chat.first_name
     allowed_chats = list(map(int, TELEGRAM_CHATS.split()))
@@ -42,18 +46,44 @@ def update_data(update, context):
         context.bot.send_message(
             chat.id,
             'Одну секунду, {}, команда выполняется...'.format(name))
-        data = transform_data(get_all_data())
+        data = transform_data_ils(get_all_data_ils())
         context.bot.send_message(
             chat.id,
             'Данные с Google sheets загружены...')
-        delete_data_from_server()
+        delete_data_from_server_ils()
         context.bot.send_message(
             chat.id,
             'Старые данные с сайта удалены успешно...')
-        upload_data_to_server(data)
+        upload_data_to_server_ils(data)
         context.bot.send_message(
             chat.id,
-            'Информация обновлена! Всего строк: ' + str(len(data['results'])))
+            'Информация для лиги плавания обновлена! Всего строк: ' + str(len(data['results'])))
+    else:
+        context.bot.send_message(
+            chat.id,
+            'У вас недостаточно прав для выполнения этой команды!')
+
+
+def update_data_ilr(update, context):
+    chat = update.effective_chat
+    name = update.message.chat.first_name
+    allowed_chats = list(map(int, TELEGRAM_CHATS.split()))
+    if chat['id'] in allowed_chats:
+        context.bot.send_message(
+            chat.id,
+            'Одну секунду, {}, команда выполняется...'.format(name))
+        data = transform_data_ilr(get_all_data_ilr())
+        context.bot.send_message(
+            chat.id,
+            'Данные с Google sheets загружены...')
+        delete_data_from_server_ilr()
+        context.bot.send_message(
+            chat.id,
+            'Старые данные с сайта удалены успешно...')
+        upload_data_to_server_ilr(data)
+        context.bot.send_message(
+            chat.id,
+            'Информация для беговой лиги обновлена! Всего строк: ' + str(len(data['results'])))
     else:
         context.bot.send_message(
             chat.id,
@@ -63,7 +93,7 @@ def update_data(update, context):
 def wake_up(update, context):
     chat = update.effective_chat
     name = update.message.chat.first_name
-    button = ReplyKeyboardMarkup([['/newcat', '/update']],
+    button = ReplyKeyboardMarkup([['/newcat', '/update ILS', '/update ILR']],
                                  resize_keyboard=True)
 
     context.bot.send_message(
@@ -76,7 +106,8 @@ def wake_up(update, context):
 if __name__ == '__main__':
     updater.dispatcher.add_handler(CommandHandler('start', wake_up))
     updater.dispatcher.add_handler(CommandHandler('newcat', new_cat))
-    updater.dispatcher.add_handler(CommandHandler('update', update_data))
+    updater.dispatcher.add_handler(CommandHandler('update ILS', update_data_ils))
+    updater.dispatcher.add_handler(CommandHandler('update ILR', update_data_ilr))
 
     updater.start_polling()
     updater.idle()

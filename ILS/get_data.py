@@ -23,7 +23,7 @@ TOKEN_DICT = {
 }
 
 
-def get_all_data():
+def get_all_data_ils():
     scope = [
         'https://spreadsheets.google.com/feeds',
         'https://www.googleapis.com/auth/drive']

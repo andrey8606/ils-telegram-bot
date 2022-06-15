@@ -101,12 +101,12 @@ def define_progress(data):
     return list(reversed(res))
 
 
-def delete_data_from_server():
+def delete_data_from_server_ils():
     url = 'https://league.ilovesupersport.com/swimming-api/v1/drop-results/'
     requests.request("DELETE", url, headers=HEADERS, data={})
 
 
-def upload_data_to_server(data):
+def upload_data_to_server_ils(data):
     url = 'https://league.ilovesupersport.com/swimming-api/v1/results/'
     try:
         requests.request("POST", url, headers=HEADERS,
@@ -135,7 +135,7 @@ def upload_data_to_server(data):
         raise Exception(e)
 
 
-def transform_data(data):
+def transform_data_ils(data):
     df = data.copy()
     df['date'] = df['date'].apply(
         lambda x: dt.datetime.strptime(x, '%d.%m.%Y'))
