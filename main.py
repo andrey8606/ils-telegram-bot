@@ -95,7 +95,7 @@ def update_data_ilr(update, context):
 def wake_up(update, context):
     chat = update.effective_chat
     name = update.message.chat.first_name
-    button = ReplyKeyboardMarkup([['/newcat', '/update ILS', '/update ILR']],
+    button = ReplyKeyboardMarkup([['/newcat', '/update_ILS', '/update_ILR']],
                                  resize_keyboard=True)
 
     context.bot.send_message(
@@ -108,9 +108,9 @@ def wake_up(update, context):
 if __name__ == '__main__':
     updater.dispatcher.add_handler(CommandHandler('start', wake_up))
     updater.dispatcher.add_handler(CommandHandler('newcat', new_cat))
-    updater.dispatcher.add_handler(CommandHandler('update ILS',
+    updater.dispatcher.add_handler(CommandHandler('update_ILS',
                                                   update_data_ils))
-    updater.dispatcher.add_handler(CommandHandler('update ILR',
+    updater.dispatcher.add_handler(CommandHandler('update_ILR',
                                                   update_data_ilr))
 
     updater.start_polling()
