@@ -12,7 +12,7 @@ TOKEN_DICT = {
     "project_id": os.getenv('PROJECT_ID_ILR'),
     "private_key_id": os.getenv('PRIVATE_KEY_ID_ILR'),
     "private_key": base64.b64decode(
-        os.getenv('PRIVATE_KEY_ILR').encode("UTF-8")
+        os.getenv('PRIVATE_KEY_ILR')
     ).decode("UTF-8"),
     "client_email": os.getenv('CLIENT_EMAIL_ILR'),
     "client_id": os.getenv('CLIENT_ID_ILR'),
