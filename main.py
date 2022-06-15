@@ -57,7 +57,8 @@ def update_data_ils(update, context):
         upload_data_to_server_ils(data)
         context.bot.send_message(
             chat.id,
-            'Информация для лиги плавания обновлена! Всего строк: ' + str(len(data['results'])))
+            'Информация для лиги плавания обновлена! '
+            'Всего строк: ' + str(len(data['results'])))
     else:
         context.bot.send_message(
             chat.id,
@@ -83,7 +84,8 @@ def update_data_ilr(update, context):
         upload_data_to_server_ilr(data)
         context.bot.send_message(
             chat.id,
-            'Информация для беговой лиги обновлена! Всего строк: ' + str(len(data['results'])))
+            'Информация для беговой лиги обновлена! '
+            'Всего строк: ' + str(len(data['results'])))
     else:
         context.bot.send_message(
             chat.id,
@@ -106,8 +108,10 @@ def wake_up(update, context):
 if __name__ == '__main__':
     updater.dispatcher.add_handler(CommandHandler('start', wake_up))
     updater.dispatcher.add_handler(CommandHandler('newcat', new_cat))
-    updater.dispatcher.add_handler(CommandHandler('update ILS', update_data_ils))
-    updater.dispatcher.add_handler(CommandHandler('update ILR', update_data_ilr))
+    updater.dispatcher.add_handler(CommandHandler('update ILS',
+                                                  update_data_ils))
+    updater.dispatcher.add_handler(CommandHandler('update ILR',
+                                                  update_data_ilr))
 
     updater.start_polling()
     updater.idle()
