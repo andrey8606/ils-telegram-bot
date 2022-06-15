@@ -72,6 +72,17 @@ jobs:
             echo AUTH_PROVIDER=${{ secrets.AUTH_PROVIDER }} >> .env
             echo CLIENT_CERT=${{ secrets.CLIENT_CERT }} >> .env
             echo PRIVATE_KEY=${{ secrets.PRIVATE_KEY }} >> .env            
+            echo API_TOKEN=${{ secrets.API_TOKEN_ILR }} >> .env
+            echo TYPE=${{ secrets.TYPE_ILR }} >> .env
+            echo PROJECT_ID=${{ secrets.PROJECT_ID_ILR }} >> .env
+            echo PRIVATE_KEY_ID=${{ secrets.PRIVATE_KEY_ID_ILR }} >> .env
+            echo CLIENT_EMAIL=${{ secrets.CLIENT_EMAIL_ILR }} >> .env
+            echo CLIENT_ID=${{ secrets.CLIENT_ID_ILR }} >> .env
+            echo AUTH_URI=${{ secrets.AUTH_URI_ILR }} >> .env
+            echo TOKEN_URI=${{ secrets.TOKEN_URI_ILR }} >> .env
+            echo AUTH_PROVIDER=${{ secrets.AUTH_PROVIDER_ILR }} >> .env
+            echo CLIENT_CERT=${{ secrets.CLIENT_CERT_ILR }} >> .env
+            echo PRIVATE_KEY=${{ secrets.PRIVATE_KEY_ILR }} >> .env  
             sudo docker run --env-file ./.env --rm -d andrey8606/ils-telegram-bot:latest
   send_message:
     runs-on: ubuntu-latest
