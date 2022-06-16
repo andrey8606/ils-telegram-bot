@@ -162,6 +162,49 @@ def transform_data_ilr(data):
     df['Dist'] = df['Dist'].astype('int32')
     df = df[df['Year'] >= 2021]
 
+    for col, data in df.groupby('Year'):
+        res1000 = data[data['Dist'] == 1000].pivot_table(
+            index='name', values='Seconds', aggfunc='min')\
+            .sort_values(by='Seconds').reset_index().reset_index()
+        res1000['index'] = res1000['index'].apply(lambda x: x + 1)
+        res1000['Dist'] = 1000
+        res1000['s20'] = res1000.apply(set_sub20, axis=1)
+
+        res_m_1000 = (data[(data['Dist'] == 1000) & (data['gender'] == 'М')]
+                      .pivot_table(index='name', values='Seconds', aggfunc='min')
+                      .sort_values(by='Seconds').reset_index().reset_index())
+        res_m_1000['index'] = res_m_1000['index'].apply(lambda x: x + 1)
+
+        res_w_1000 = (data[(data['Dist'] == 1000) & (data['gender'] == 'Ж')]
+                      .pivot_table(index='name', values='Seconds', aggfunc='min')
+                      .sort_values(by='Seconds').reset_index().reset_index())
+        res_w_1000['index'] = res_w_1000['index'].apply(lambda x: x + 1)
+        ALL_RESULTS_1000[col] = [res1000, res_m_1000, res_w_1000]
+
+        res5000 = (data[data['Dist'] == 5000]
+                   .pivot_table(index='name', values='Seconds', aggfunc='min')
+                   .sort_values(by='Seconds').reset_index().reset_index())
+        res5000['index'] = res5000['index'].apply(lambda x: x + 1)
+        res5000['Dist'] = 5000
+        res5000['s20'] = res5000.apply(set_sub20, axis=1)
+
+        res_m_5000 = pd.DataFrame()
+        res_w_5000 = pd.DataFrame()
+        if len(data[(data['Dist'] == 5000) & (data['gender'] == 'М')]) > 0:
+            res_m_5000 = (
+                data[(data['Dist'] == 5000) & (data['gender'] == 'М')]
+                .pivot_table(index='name', values='Seconds', aggfunc='min')
+                .sort_values(by='Seconds').reset_index().reset_index())
+            res_m_5000['index'] = res_m_5000['index'].apply(lambda x: x + 1)
+        if len(data[(data['Dist'] == 5000) & (data['gender'] == 'Ж')]) > 0:
+            res_w_5000 = (
+                data[(data['Dist'] == 5000) & (data['gender'] == 'Ж')]
+                .pivot_table(index='name', values='Seconds', aggfunc='min')
+                .sort_values(by='Seconds').reset_index().reset_index())
+            res_w_5000['index'] = res_w_5000['index'].apply(lambda x: x + 1)
+
+        ALL_RESULTS_5000[col] = [res5000, res_m_5000, res_w_5000]
+
     df['place'] = df.apply(set_results, axis=1)
     df['sub20'] = df.apply(sub20, axis=1)
     df['m/w'] = df.apply(set_results_gender, axis=1)
@@ -171,11 +214,8 @@ def transform_data_ilr(data):
     i = 0
     for row in d[d.duplicated()].values:
         data = df[(df['name'] == row[0]) & (df['date'] == row[1])].sort_values(by='Seconds').iloc[0:1]
-        # display(data)
-        # display(df[(df['name'] == row[0]) & (df['date'] == row[1])])
         df = df.drop(index=df[(df['name'] == row[0]) & (df['date'] == row[1])].index)
         df = pd.concat([df, data])
-
     df['year'] = pd.DatetimeIndex(df['date']).year
     df['month'] = pd.DatetimeIndex(df['date']).month
 
