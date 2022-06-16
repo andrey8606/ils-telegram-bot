@@ -83,7 +83,7 @@ jobs:
             echo AUTH_PROVIDER_ILR=${{ secrets.AUTH_PROVIDER_ILR }} >> .env
             echo CLIENT_CERT_ILR=${{ secrets.CLIENT_CERT_ILR }} >> .env
             echo PRIVATE_KEY_ILR=${{ secrets.PRIVATE_KEY_ILR }} >> .env  
-            sudo docker run --env-file ./.env --rm -d andrey8606/ils-telegram-bot:latest
+
   send_message:
     runs-on: ubuntu-latest
     needs: deploy
