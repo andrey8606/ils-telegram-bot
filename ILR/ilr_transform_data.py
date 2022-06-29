@@ -14,6 +14,7 @@ HEADERS = {
 }
 ALL_RESULTS_1000 = {}
 ALL_RESULTS_5000 = {}
+DISTANCES = [1000, 5000]
 
 
 def set_sub20(row):
@@ -161,6 +162,7 @@ def transform_data_ilr(data):
     df['Year'] = pd.DatetimeIndex(df['date']).year
     df['Dist'] = df['Dist'].astype('int32')
     df = df[df['Year'] >= 2021]
+    df = df[df['Dist'].isin(DISTANCES)]
 
     for col, data in df.groupby('Year'):
         res1000 = data[data['Dist'] == 1000].pivot_table(
