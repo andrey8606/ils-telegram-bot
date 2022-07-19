@@ -212,11 +212,13 @@ def transform_data_ilr(data):
     df['m/w'] = df.apply(set_results_gender, axis=1)
 
     df['name'] = df['name'].apply(lambda x: x.split()[1] + ' ' + x.split()[0])
-    d = df[['name', 'date']]
+    d = df[['name', 'date', 'Dist']]
     i = 0
     for row in d[d.duplicated()].values:
-        data = df[(df['name'] == row[0]) & (df['date'] == row[1])].sort_values(by='Seconds').iloc[0:1]
-        df = df.drop(index=df[(df['name'] == row[0]) & (df['date'] == row[1])].index)
+        data = (df[(df['name'] == row[0]) & (df['date'] == row[1]) & (df['Dist'] == row[2])]
+                .sort_values(by='Seconds').iloc[0:1])
+        df = df.drop(index=df[(df['name'] == row[0]) & (df['date'] == row[1])
+                              & (df['Dist'] == row[2])].index)
         df = pd.concat([df, data])
     df['year'] = pd.DatetimeIndex(df['date']).year
     df['month'] = pd.DatetimeIndex(df['date']).month
