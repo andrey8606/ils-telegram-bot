@@ -101,6 +101,25 @@ def define_progress(data):
     return list(reversed(res))
 
 
+def transliterate(name):
+    slovar = {'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
+              'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n',
+              'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h',
+              'ц': 'c', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e',
+              'ю': 'u', 'я': 'ya', 'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'Yo',
+              'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'Й': 'Y', 'К': 'K', 'Л': 'L', 'М': 'M', 'Н': 'N',
+              'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U', 'Ф': 'F', 'Х': 'H',
+              'Ц': 'C', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sch', 'Ъ': '', 'Ы': 'y', 'Ь': '', 'Э': 'E',
+              'Ю': 'U', 'Я': 'Ya', ',': '', '?': '', ' ': ' ', '~': '', '!': '', '@': '', '#': '',
+              '$': '', '%': '', '^': '', '&': '', '*': '', '(': '', ')': '', '-': '', '=': '', '+': '',
+              ':': '', ';': '', '<': '', '>': '', '\'': '', '"': '', '\\': '', '/': '', '№': '',
+              '[': '', ']': '', '{': '', '}': '', 'ґ': '', 'ї': '', 'є': '', 'Ґ': 'g', 'Ї': 'i',
+              'Є': 'e', '—': ''}
+    for key in slovar:
+        name = name.replace(key, slovar[key])
+    return name
+
+
 def delete_data_from_server_ils():
     url = 'https://league.ilovesupersport.com/swimming-api/v1/drop-results/'
     requests.request("DELETE", url, headers=HEADERS, data={})
@@ -181,6 +200,7 @@ def transform_data_ils(data):
 
     df['year'] = pd.DatetimeIndex(df['date']).year
     df['month'] = pd.DatetimeIndex(df['date']).month
+    df['name_eng'] = df['name'].apply(lambda x: transliterate(x))
     result = {'results': []}
     for col, data in df.groupby(['name', 'year']):
         jan = '0'
@@ -272,7 +292,8 @@ def transform_data_ils(data):
             'sep_progress': res_month[8],
             'oct_progress': res_month[9],
             'nov_progress': res_month[10],
-            'dec_progress': res_month[11]
+            'dec_progress': res_month[11],
+            'name_eng': data.values[0][13],
         }
         result['results'].append(row)
     return result
