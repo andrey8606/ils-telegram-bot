@@ -128,14 +128,14 @@ def delete_data_from_server_ils():
 def upload_data_to_server_ils(data):
     url = 'https://league.ilovesupersport.com/swimming-api/v1/results/'
     try:
-        requests.request("POST", url, headers=HEADERS,
-                         data=json.dumps(data['results'][0:1000]))
-        requests.request("POST", url, headers=HEADERS,
-                         data=json.dumps(data['results'][1000:2000]))
-        requests.request("POST", url, headers=HEADERS,
-                         data=json.dumps(data['results'][2000:3000]))
-        requests.request("POST", url, headers=HEADERS,
-                         data=json.dumps(data['results'][3000:]))
+        # requests.request("POST", url, headers=HEADERS,
+        #                  data=json.dumps(data['results'][0:1000]))
+        for i in range((len(data['results']) // 1000) + 1):
+            response = requests.request("POST", url, headers=HEADERS,
+                                        data=json.dumps(
+                                            data['results'][i * 1000: i * 1000 + 1000])
+                                        )
+            print(response.status_code)
     except requests.exceptions.Timeout:
         raise Exception('Сервер отвалился по таймауту')
     except requests.exceptions.RequestException:
