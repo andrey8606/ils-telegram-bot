@@ -43,12 +43,12 @@ def set_results(row):
     name = row['name']
     dist = row['Dist']
     year = row['Year']
-    data1000 = ALL_RESULTS_1000[year][0]
-    data5000 = ALL_RESULTS_5000[year][0]
     try:
         if dist == 1000:
+            data1000 = ALL_RESULTS_1000[year][0]
             return data1000.loc[data1000['name'] == name, 'index'].iloc[0]
         else:
+            data5000 = ALL_RESULTS_5000[year][0]
             return data5000.loc[data5000['name'] == name, 'index'].iloc[0]
     except:
         return 'None'
@@ -58,12 +58,12 @@ def sub20(row):
     name = row['name']
     year = row['Year']
     dist = row['Dist']
-    data1000 = ALL_RESULTS_1000[year][0]
-    data5000 = ALL_RESULTS_5000[year][0]
     try:
         if dist == 1000:
+            data1000 = ALL_RESULTS_1000[year][0]
             return data1000.loc[data1000['name'] == name, 's20'].iloc[0]
         else:
+            data5000 = ALL_RESULTS_5000[year][0]
             return data5000.loc[data5000['name'] == name, 's20'].iloc[0]
     except:
         return ''
@@ -74,18 +74,19 @@ def set_results_gender(row):
     dist = row['Dist']
     gender = row['gender']
     year = row['Year']
-
-    if dist == 1000:
-        data_m = ALL_RESULTS_1000[year][1]
-        data_w = ALL_RESULTS_1000[year][2]
-    else:
-        data_m = ALL_RESULTS_5000[year][1]
-        data_w = ALL_RESULTS_5000[year][2]
-
-    if gender == 'М':
-        return data_m.loc[data_m['name'] == name, 'index'].iloc[0]
-    else:
-        return data_w.loc[data_w['name'] == name, 'index'].iloc[0]
+    try:
+        if dist == 1000:
+            data_m = ALL_RESULTS_1000[year][1]
+            data_w = ALL_RESULTS_1000[year][2]
+        else:
+            data_m = ALL_RESULTS_5000[year][1]
+            data_w = ALL_RESULTS_5000[year][2]
+        if gender == 'М':
+            return data_m.loc[data_m['name'] == name, 'index'].iloc[0]
+        else:
+            return data_w.loc[data_w['name'] == name, 'index'].iloc[0]
+    except:
+        return ''
 
 
 def define_progress(data):
@@ -125,17 +126,25 @@ def delete_data_from_server_ilr():
     requests.request("DELETE", url, headers=HEADERS, data={})
 
 
+def make_serializable(obj):
+    if isinstance(obj, (np.int64, np.int32)):
+        return int(obj)
+    if isinstance(obj, (np.float64, np.float32)):
+        return float(obj)
+    raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
+
+
 def upload_data_to_server_ilr(data):
     url = 'http://51.250.80.45:8000/running-api/v1/results/'
     try:
         requests.request("POST", url, headers=HEADERS,
-                         data=json.dumps(data['results'][0:1500]))
+                         data=json.dumps(data['results'][0:1500], default=make_serializable))
         if len(data['results']) > 1500:
             requests.request("POST", url, headers=HEADERS,
-                             data=json.dumps(data['results'][1500:3000]))
+                             data=json.dumps(data['results'][1500:3000], default=make_serializable))
         if len(data['results']) > 3000:
             requests.request("POST", url, headers=HEADERS,
-                             data=json.dumps(data['results'][3000:4500]))
+                             data=json.dumps(data['results'][3000:4500], default=make_serializable))
     except requests.exceptions.Timeout:
         raise Exception('Сервер отвалился по таймауту')
     except requests.exceptions.RequestException:
@@ -165,23 +174,24 @@ def transform_data_ilr(data):
     df = df[df['Dist'].isin(DISTANCES)]
 
     for col, data in df.groupby('Year'):
-        res1000 = data[data['Dist'] == 1000].pivot_table(
-            index='name', values='Seconds', aggfunc='min')\
-            .sort_values(by='Seconds').reset_index().reset_index()
-        res1000['index'] = res1000['index'].apply(lambda x: x + 1)
-        res1000['Dist'] = 1000
-        res1000['s20'] = res1000.apply(set_sub20, axis=1)
+        if len(data[data['Dist'] == 1000]) > 0:
+            res1000 = data[data['Dist'] == 1000].pivot_table(
+                index='name', values='Seconds', aggfunc='min')\
+                .sort_values(by='Seconds').reset_index().reset_index()
+            res1000['index'] = res1000['index'].apply(lambda x: x + 1)
+            res1000['Dist'] = 1000
+            res1000['s20'] = res1000.apply(set_sub20, axis=1)
 
-        res_m_1000 = (data[(data['Dist'] == 1000) & (data['gender'] == 'М')]
-                      .pivot_table(index='name', values='Seconds', aggfunc='min')
-                      .sort_values(by='Seconds').reset_index().reset_index())
-        res_m_1000['index'] = res_m_1000['index'].apply(lambda x: x + 1)
+            res_m_1000 = (data[(data['Dist'] == 1000) & (data['gender'] == 'М')]
+                          .pivot_table(index='name', values='Seconds', aggfunc='min')
+                          .sort_values(by='Seconds').reset_index().reset_index())
+            res_m_1000['index'] = res_m_1000['index'].apply(lambda x: x + 1)
 
-        res_w_1000 = (data[(data['Dist'] == 1000) & (data['gender'] == 'Ж')]
-                      .pivot_table(index='name', values='Seconds', aggfunc='min')
-                      .sort_values(by='Seconds').reset_index().reset_index())
-        res_w_1000['index'] = res_w_1000['index'].apply(lambda x: x + 1)
-        ALL_RESULTS_1000[col] = [res1000, res_m_1000, res_w_1000]
+            res_w_1000 = (data[(data['Dist'] == 1000) & (data['gender'] == 'Ж')]
+                          .pivot_table(index='name', values='Seconds', aggfunc='min')
+                          .sort_values(by='Seconds').reset_index().reset_index())
+            res_w_1000['index'] = res_w_1000['index'].apply(lambda x: x + 1)
+            ALL_RESULTS_1000[col] = [res1000, res_m_1000, res_w_1000]
 
         res5000 = (data[data['Dist'] == 5000]
                    .pivot_table(index='name', values='Seconds', aggfunc='min')
